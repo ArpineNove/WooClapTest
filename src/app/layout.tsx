@@ -1,5 +1,6 @@
 import './globals.css';
 import Header from '@/app/components/Header';
+import StyledComponentsRegistry from '@/app/registry/registry';
 
 export default function RootLayout({
   children,
@@ -9,8 +10,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        {children}
+        <StyledComponentsRegistry>
+          <Header />
+          {children}
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
