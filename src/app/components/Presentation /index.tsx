@@ -18,13 +18,15 @@ const Presentation = ({
   description,
   isReversed = false,
 }: PresentationProps) => (
-  <PresentBlock reversed={isReversed}>
-    <Image src={imgSrc} alt={imgAlt} width={500} height={475} />
-    <PresentInfoBlock>
-      <Title>{title}</Title>
-      <Description>{description}</Description>
-    </PresentInfoBlock>
-  </PresentBlock>
+  <>
+    <PresentBlock reversed={isReversed}>
+      <Image src={imgSrc} alt={imgAlt} width={500} height={475} />
+      <PresentInfoBlock>
+        <Title>{title}</Title>
+        <Description>{description}</Description>
+      </PresentInfoBlock>
+    </PresentBlock>
+  </>
 );
 
 export default Presentation;

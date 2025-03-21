@@ -11,11 +11,13 @@ type Props = {
 };
 
 const FormWrapper = ({ domains = [], usersPlans = {} }: Props) => (
-  <FormSection>
-    <ContactForm domains={domains} usersPlans={usersPlans} />
-    <BlueCircle />
-    <InfoBlock />
-  </FormSection>
+  <>
+    <FormSection>
+      <ContactForm domains={domains} usersPlans={usersPlans} />
+      <BlueCircle />
+      <InfoBlock />
+    </FormSection>
+  </>
 );
 
 export default FormWrapper;

@@ -6,15 +6,14 @@ import translations from '../../public/locales/translations.json';
 
 import Presentation from '@/app/components/Presentation ';
 
-export async function loadCsvData(filePath: string) {
+async function loadCsvData(filePath: string) {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   return fileContent
     .trim()
     .split('\n')
     .map((line) => line.trim());
 }
-
-export async function loadUsersPlansData() {
+async function loadUsersPlansData() {
   const filePath = path.join(process.cwd(), 'public/data', 'users.csv');
   const fileContent = fs.readFileSync(filePath, 'utf-8');
 
