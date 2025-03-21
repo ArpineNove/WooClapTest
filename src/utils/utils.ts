@@ -1,5 +1,6 @@
 export const sendToSlack = async (message: string, webhookUrl: string) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
