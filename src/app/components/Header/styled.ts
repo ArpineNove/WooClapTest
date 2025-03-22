@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const HeaderContainer = styled.header`
-  padding: 20px 100px;
+  padding: var(--spacing-md) var(--spacing-page-horizontal);
   text-align: start;
-  border-bottom: 1px solid rgb(231, 235, 240);
+  border-bottom: 1px solid var(--color-border);
 `;
 
 export const Logo = styled.a`

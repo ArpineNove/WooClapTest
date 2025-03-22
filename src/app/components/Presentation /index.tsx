@@ -1,7 +1,7 @@
 'use client';
 
-import { PresentBlock, PresentInfoBlock, Title, Description } from './styled';
 import Image from 'next/image';
+import { Description, PresentBlock, PresentInfoBlock, Title } from './styled';
 
 interface PresentationProps {
   imgSrc: string;
@@ -18,15 +18,13 @@ const Presentation = ({
   description,
   isReversed = false,
 }: PresentationProps) => (
-  <>
-    <PresentBlock reversed={isReversed}>
-      <Image src={imgSrc} alt={imgAlt} width={500} height={475} />
-      <PresentInfoBlock>
-        <Title>{title}</Title>
-        <Description>{description}</Description>
-      </PresentInfoBlock>
-    </PresentBlock>
-  </>
+  <PresentBlock reversed={isReversed}>
+    <Image src={imgSrc} alt={imgAlt} width={500} height={500} />
+    <PresentInfoBlock>
+      <Title>{title}</Title>
+      <Description>{description}</Description>
+    </PresentInfoBlock>
+  </PresentBlock>
 );
 
 export default Presentation;

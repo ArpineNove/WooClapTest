@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, MouseEvent } from 'react';
-import { ModalWrapper, ModalContent, CloseButton } from './syled';
+import { ModalWrapper, ModalContent, CloseButton } from './styled';
 
 interface ModalProps {
   visible: boolean;

@@ -6,6 +6,7 @@ import translations from '../../public/locales/translations.json';
 
 import Presentation from '@/app/components/Presentation ';
 
+// to utils
 async function loadCsvData(filePath: string) {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   return fileContent
@@ -31,13 +32,14 @@ async function loadUsersPlansData() {
   return usersDomains;
 }
 export default async function Home() {
+  // run on submit
   const [domains, usersPlans] = await Promise.all([
     loadCsvData(path.join(process.cwd(), 'public/data', 'domains.csv')),
     loadUsersPlansData(),
   ]);
 
   return (
-    <div>
+    <>
       <FormWrapper usersPlans={usersPlans} domains={domains[0].split(',')} />
       <Presentation
         imgSrc="/images/mcq-poll-find-number.png"
@@ -52,6 +54,6 @@ export default async function Home() {
         description={translations.quickPresentation2.description}
         isReversed
       />
-    </div>
+    </>
   );
 }

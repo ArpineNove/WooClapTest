@@ -1,8 +1,10 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import './styles/theme.css';
 
+:root {
+  /* Legacy variables - kept for backward compatibility */
+  --background: var(--color-background-primary);
+  --foreground: var(--color-text-primary);
+}
 
 html,
 body {
@@ -11,9 +13,9 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Nunito',  system-ui;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  font-family: 'Nunito', system-ui;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -22,7 +24,6 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-
 }
 
 a {

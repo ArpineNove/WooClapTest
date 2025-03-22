@@ -14,6 +14,7 @@ import { sendToSlack } from '@/utils/utils';
 import * as Yup from 'yup';
 import Modal from '@/app/components/Modal';
 
+// to model
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required(
     translations.form.firstNameLabel + ' is required'
@@ -72,10 +73,11 @@ const ContactForm: React.FC<ContactFormProps> = ({ domains, usersPlans }) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    // react hook form
     validationSchema
       .validate(formData, { abortEarly: false })
       .then(() => {
+        // to utils
         const slackMessage = `New contact form submission:
           - First Name: ${formData.firstName}
           - Last Name: ${formData.lastName}
@@ -91,6 +93,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ domains, usersPlans }) => {
           !domains.includes(formData.email) &&
           usersPlans[formData.email] !== 'CUSTOM_PLAN'
         ) {
+          // to env
           webhookUrl =
             'https://hooks.slack.com/services/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';
         } else {

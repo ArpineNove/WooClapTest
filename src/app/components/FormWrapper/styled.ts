@@ -2,18 +2,18 @@ import styled from 'styled-components';
 
 export const FormSection = styled.section`
   display: flex;
-  padding: 60px;
+  padding: var(--spacing-xl);
   gap: 40px;
-  margin: 30px 150px;
-  background: rgb(244, 248, 255);
-  border-radius: 18px;
+  margin: var(--spacing-md) var(--spacing-page-horizontal);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-lg);
   position: relative;
   overflow: hidden;
 `;
 
 export const BlueCircle = styled.div`
   position: absolute;
-  background: radial-gradient(#146aff, #2da3ff);
+  background: radial-gradient(var(--color-primary), #2da3ff);
   width: 100%;
   height: 202%;
   border-radius: 50%;
