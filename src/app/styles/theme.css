@@ -1,17 +1,19 @@
 :root {
-  /* Colors */
-  --color-primary: #0070f3;
-  --color-text-primary: #000000;
-  --color-text-secondary: rgb(101, 102, 134);
-  --color-border: rgb(231, 235, 240);
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #f9f9f9;
-  --color-success: green;
-  --color-error: red;
+
+  --color-primary: #0070f3; /* Wooclap blue */
+  --color-secondary: #2da3ff; /* Lighter blue */
+  --color-text-primary: #171717; /* Near black for main text */
+  --color-text-secondary: rgb(101, 102, 134); /* Subtle text color */
+  --color-border: rgb(231, 235, 240); /* Light border color */
+  --color-background-primary: #ffffff; /* White background */
+  --color-background-secondary: #f4f8ff; /* Light blue background */
+  --color-success: #4caf50; /* Green */
+  --color-error: #ff5a5a; /* Red */
 
   /* Typography */
+  --font-family: 'Nunito', system-ui, -apple-system, sans-serif;
   --font-size-xs: 12px;
-  --font-size-sm: 17px;
+  --font-size-sm: 16px;
   --font-size-md: 20px;
   --font-size-lg: 32px;
   --font-size-xl: 42px;
@@ -21,14 +23,19 @@
 
   /* Spacing */
   --spacing-xs: 8px;
-  --spacing-sm: 10px;
+  --spacing-sm: 12px;
   --spacing-md: 20px;
-  --spacing-lg: 45px;
+  --spacing-lg: 40px;
   --spacing-xl: 60px;
   --spacing-page-horizontal: 100px;
 
   /* Border */
-  --border-radius-sm: 10px;
+  --border-radius-sm: 8px;
   --border-radius-md: 15px;
   --border-radius-lg: 18px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
 }

@@ -1,4 +1,9 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
+import '@i18n/i18n';
+import { useTranslation } from 'next-i18next';
+
 import {
   FormBlock,
   Input,
@@ -8,198 +13,221 @@ import {
   UserName,
   UserNameBox,
   Label,
+  ErrorText,
 } from './styled';
-import translations from '../../../../public/locales/translations.json';
-import { sendToSlack } from '@/utils/utils';
-import * as Yup from 'yup';
+import {
+  generateSlackMessage,
+  sendCyphMessage,
+  sendToSlack,
+} from '@/utils/utils';
+import { validationSchema } from '@/app/components/ContactForm/model';
+
 import Modal from '@/app/components/Modal';
 
-// to model
-const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required(
-    translations.form.firstNameLabel + ' is required'
-  ),
-  lastName: Yup.string().required(
-    translations.form.lastNameLabel + ' is required'
-  ),
-  email: Yup.string()
-    .email('Email is invalid')
-    .required(translations.form.emailLabel + ' is required'),
-  sector: Yup.string().required(translations.form.sectorLabel + ' is required'),
-  job: Yup.string().when('sector', {
-    is: (val: string) =>
-      val === translations.form.business || val === translations.form.education,
-    then: (schema) =>
-      schema.required(translations.form.jobLabel + ' is required'),
-  }),
-  organization: Yup.string().when('sector', {
-    is: (val: string) => val === translations.form.business,
-    then: (schema) =>
-      schema.required(translations.form.organizationLabel + ' is required'),
-  }),
-  establishment: Yup.string().when('sector', {
-    is: (val: string) => val === translations.form.education,
-    then: (schema) =>
-      schema.required(translations.form.establishmentLabel + ' is required'),
-  }),
-});
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  sector: string;
+  job: string;
+  education: string;
+  organization: string;
+  establishment: string;
+};
 
-interface ContactFormProps {
-  domains: string[];
-  usersPlans: Record<string, string>;
-}
-
-const ContactForm: React.FC<ContactFormProps> = ({ domains, usersPlans }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    sector: '',
-    job: '',
-    organization: '',
-    establishment: '',
+const ContactForm = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setError,
+    watch,
+  } = useForm<FormData>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      sector: '',
+      job: '',
+      organization: '',
+      establishment: '',
+    },
   });
-  const [open, setOpen] = React.useState(false);
-  const [modalInfo, setModalInfo] = React.useState('');
+
+  const [open, setOpen] = useState(false);
+  const [modalInfo, setModalInfo] = useState('');
   const [modalType, setModalType] = useState<'error' | 'success' | undefined>(
     undefined
   );
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const { t } = useTranslation();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // react hook form
+  const onSubmit = async (data: FormData) => {
+    const [domains, usersPlans] = await Promise.all([
+      fetch('/api/loadCsvData').then((res) => res.json()),
+      fetch('/api/loadUsersPlansData').then((res) => res.json()),
+    ]);
+
     validationSchema
-      .validate(formData, { abortEarly: false })
+      .validate(data, { abortEarly: false })
       .then(() => {
-        // to utils
-        const slackMessage = `New contact form submission:
-          - First Name: ${formData.firstName}
-          - Last Name: ${formData.lastName}
-          - Email: ${formData.email}
-          - Sector: ${formData.sector}
-          - Job: ${formData.job}
-          - Organization: ${formData.organization}
-          - Establishment: ${formData.establishment}`;
+        const slackMessage = generateSlackMessage(data);
+        const webhookUrl =
+          !domains.includes(data.email) &&
+          usersPlans[data.email] !== 'CUSTOM_PLAN'
+            ? process.env.NEXT_PUBLIC_SLACK_WEBHOOK_DEFAULT
+            : process.env.NEXT_PUBLIC_SLACK_WEBHOOK_CUSTOM;
 
-        let webhookUrl = '';
+        sendCyphMessage(slackMessage).then((res: string) =>
+          sendToSlack(res, webhookUrl || '')
+            .then((res) => {
+              if (typeof res === 'string') {
+                setModalInfo(res);
+                setModalType('success');
+              } else {
+                setModalInfo(res.toString());
+                setModalType('error');
+              }
+            })
+            .finally(() => setOpen(true))
+        );
 
-        if (
-          !domains.includes(formData.email) &&
-          usersPlans[formData.email] !== 'CUSTOM_PLAN'
-        ) {
-          // to env
-          webhookUrl =
-            'https://hooks.slack.com/services/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';
-        } else {
-          webhookUrl =
-            'https://hooks.slack.com/services/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';
-        }
-
-        sendToSlack(slackMessage, webhookUrl)
-          .then((res) => {
-            if (typeof res === 'string') {
-              setModalInfo(res);
-              setModalType('success');
-            } else {
-              setModalInfo(res.toString());
-              setModalType('error');
-            }
-          })
-          .finally(() => setOpen(true));
-
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          sector: '',
-          job: '',
-          organization: '',
-          establishment: '',
-        });
+        reset();
       })
       .catch((err) => {
-        setModalInfo(`Validation failed: ${err.errors}`);
-        setModalType('error');
-        setOpen(true);
+        if (err.inner) {
+          err.inner.forEach((error: { path: string; message: string }) => {
+            setError(error.path as keyof FormData, {
+              type: 'manual',
+              message: error.message,
+            });
+          });
+        }
       });
   };
 
-  const isBusiness = formData.sector === translations.form.business;
-  const isEducation = formData.sector === translations.form.education;
+  const sector = watch('sector');
+  const isBusiness = sector === t('form.business');
+  const isEducation = sector === t('form.education');
 
   return (
     <FormBlock>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <UserName>
           <UserNameBox>
-            <Label>{translations.form.firstNameLabel}*</Label>
-            <Input
+            <Label>{t('form.firstNameLabel')}*</Label>
+            <Controller
               name="firstName"
-              placeholder={translations.form.firstNamePlaceholder}
-              value={formData.firstName}
-              onChange={handleChange}
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Input
+                    {...field}
+                    placeholder={t('form.firstNamePlaceholder')}
+                  />
+                  {errors.firstName && (
+                    <ErrorText>{errors.firstName.message}</ErrorText>
+                  )}
+                </>
+              )}
             />
           </UserNameBox>
           <UserNameBox>
-            <Label>{translations.form.lastNameLabel}*</Label>
-            <Input
+            <Label>{t('form.lastNameLabel')}*</Label>
+            <Controller
               name="lastName"
-              placeholder={translations.form.lastNamePlaceholder}
-              value={formData.lastName}
-              onChange={handleChange}
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Input
+                    {...field}
+                    placeholder={t('form.lastNamePlaceholder')}
+                  />
+                  {errors.lastName && (
+                    <ErrorText>{errors.lastName.message}</ErrorText>
+                  )}
+                </>
+              )}
             />
           </UserNameBox>
         </UserName>
         <UserNameBox>
-          <Label>{translations.form.emailLabel}*</Label>
-          <Input
+          <Label>{t('form.emailLabel')}*</Label>
+          <Controller
             name="email"
-            placeholder={translations.form.emailPlaceholder}
-            value={formData.email}
-            onChange={handleChange}
+            control={control}
+            render={({ field }) => (
+              <>
+                <Input {...field} placeholder={t('form.emailPlaceholder')} />
+                {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
+              </>
+            )}
           />
         </UserNameBox>
         <UserNameBox>
-          <Label>{translations.form.sectorLabel}*</Label>
-          <Select name="sector" value={formData.sector} onChange={handleChange}>
-            <Option value="">{translations.form.dropdown}</Option>
-            <Option value={translations.form.business}>
-              {translations.form.business}
-            </Option>
-            <Option value={translations.form.education}>
-              {translations.form.education}
-            </Option>
-          </Select>
+          <Label>{t('form.sectorLabel')}*</Label>
+          <Controller
+            name="sector"
+            control={control}
+            render={({ field }) => (
+              <>
+                <Select {...field}>
+                  <Option value="">{t('form.dropdown')}</Option>
+                  <Option value={t('form.business')}>
+                    {t('form.business')}
+                  </Option>
+                  <Option value={t('form.education')}>
+                    {t('form.education')}
+                  </Option>
+                </Select>
+                {errors.sector && (
+                  <ErrorText>{errors.sector.message}</ErrorText>
+                )}
+              </>
+            )}
+          />
         </UserNameBox>
-
         {isBusiness && (
           <>
             <UserNameBox>
-              <Label>{translations.form.jobLabel}*</Label>
-              <Select name="job" value={formData.job} onChange={handleChange}>
-                <Option value="">{translations.form.dropdown}</Option>
-                <Option value="learningTechnologist">
-                  {translations.form.learningTechnologist}
-                </Option>
-                <Option value="trainer">{translations.form.trainer}</Option>
-                <Option value="director">{translations.form.director}</Option>
-                <Option value="learner">{translations.form.learner}</Option>
-                <Option value="other">{translations.form.other}</Option>
-              </Select>
+              <Label>{t('form.jobLabel')}*</Label>
+              <Controller
+                name="job"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Select {...field}>
+                      <Option value="">{t('form.dropdown')}</Option>
+                      <Option value="learningTechnologist">
+                        {t('form.learningTechnologist')}
+                      </Option>
+                      <Option value="trainer">{t('form.trainer')}</Option>
+                      <Option value="director">{t('form.director')}</Option>
+                      <Option value="learner">{t('form.learner')}</Option>
+                      <Option value="other">{t('form.other')}</Option>
+                    </Select>
+                    {errors.job && <ErrorText>{errors.job.message}</ErrorText>}
+                  </>
+                )}
+              />
             </UserNameBox>
             <UserNameBox>
-              <Label>{translations.form.organizationLabel}*</Label>
-              <Input
+              <Label>{t('form.organizationLabel')}*</Label>
+              <Controller
                 name="organization"
-                placeholder={translations.form.organizationPlaceholder}
-                value={formData.organization}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder={t('form.organizationPlaceholder')}
+                    />
+                    {errors.organization && (
+                      <ErrorText>{errors.organization.message}</ErrorText>
+                    )}
+                  </>
+                )}
               />
             </UserNameBox>
           </>
@@ -208,33 +236,49 @@ const ContactForm: React.FC<ContactFormProps> = ({ domains, usersPlans }) => {
         {isEducation && (
           <>
             <UserNameBox>
-              <Label>{translations.form.education}*</Label>
-              <Select
-                name={translations.form.education}
-                value={formData.job}
-                onChange={handleChange}
-              >
-                <Option value="">{translations.form.dropdown}</Option>
-                <Option value="higherEducation">
-                  {translations.form.higherEducation}
-                </Option>
-                <Option value="k12">{translations.form.k12}</Option>
-                <Option value="other">{translations.form.other}</Option>
-              </Select>
+              <Label>{t('form.education')}*</Label>
+              <Controller
+                name="education"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Select {...field}>
+                      <Option value="">{t('form.dropdown')}</Option>
+                      <Option value="higherEducation">
+                        {t('form.higherEducation')}
+                      </Option>
+                      <Option value="k12">{t('form.k12')}</Option>
+                      <Option value="other">{t('form.other')}</Option>
+                    </Select>
+                    {errors.education && (
+                      <ErrorText>{errors.education.message}</ErrorText>
+                    )}
+                  </>
+                )}
+              />
             </UserNameBox>
             <UserNameBox>
-              <Label>{translations.form.establishmentLabel}*</Label>
-              <Input
-                name={translations.form.establishmentLabel}
-                placeholder={translations.form.establishmentPlaceholder}
-                value={formData.establishment}
-                onChange={handleChange}
+              <Label>{t('form.establishmentLabel')}*</Label>
+              <Controller
+                name="establishment"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder={t('form.establishmentPlaceholder')}
+                    />
+                    {errors.establishment && (
+                      <ErrorText>{errors.establishment.message}</ErrorText>
+                    )}
+                  </>
+                )}
               />
             </UserNameBox>
           </>
         )}
 
-        <Button type="submit">{translations.form.submit}</Button>
+        <Button type="submit">{t('form.submit')}</Button>
       </form>
       <Modal
         visible={open}

@@ -1,0 +1,38 @@
+{
+  "form": {
+    "title": "Facilitez et surveillez l'engagement de vos équipes.",
+    "description": "Rendez Wooclap accessible à tous vos formateurs, modérateurs de réunion et présentateurs. Grâce à un support sur mesure, faites en sorte que Wooclap soit largement utilisé dans votre organisation.",
+    "socialProof": "2 000 000 de personnes utilisent déjà Wooclap au quotidien",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Votre prénom",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Votre nom",
+    "emailLabel": "Email professionnel",
+    "emailPlaceholder": "Votre email professionnel",
+    "sectorLabel": "Secteur",
+    "jobLabel": "Emploi",
+    "organizationLabel": "Nom de votre organisation",
+    "organizationPlaceholder": "Nom de votre organisation",
+    "establishmentLabel": "Nom de votre établissement",
+    "establishmentPlaceholder": "Nom de votre établissement",
+    "dropdown": "Sélectionner dans la liste",
+    "business": "Entreprise",
+    "education": "Éducation / Centre de formation initiale",
+    "learningTechnologist": "Technologue de l'apprentissage",
+    "trainer": "Formateur",
+    "director": "Directeur / VP",
+    "learner": "Apprenant",
+    "other": "Autre",
+    "higherEducation": "Enseignement supérieur",
+    "k12": "Primaire et secondaire",
+    "submit": "Soumettre"
+  },
+  "quickPresentation1": {
+    "title": "Évaluez le niveau de compréhension des participants",
+    "description": "Les questions à choix multiples, les sondages et les questions 'Trouver un nombre' vous permettent de savoir ce que pense votre public et d'identifier les tendances en quelques secondes. Vous pouvez également fournir des réponses correctes pour évaluer le niveau global de compréhension."
+  },
+  "quickPresentation2": {
+    "title": "Donnez la parole à vos participants",
+    "description": "Invitez vos participants à répondre avec leurs propres mots en utilisant les types de questions 'Question ouverte', 'Trouver un nombre' et 'Nuage de mots'. Ce dernier affiche les réponses les plus récurrentes en temps réel."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "form": {
+    "title": "Facilitate and monitor your teams' engagement.",
+    "description": "Make Wooclap accessible to all your trainers, meeting moderators and presenters. Thanks to tailor-made support, make Wooclap widely used in your organization.",
+    "socialProof": "2,000,000 people already use Wooclap on a daily basis",
+    "firstNameLabel": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastNameLabel": "Last name",
+    "lastNamePlaceholder": "Your last name",
+    "emailLabel": "Professional email",
+    "emailPlaceholder": "Your professional email",
+    "sectorLabel": "Sector",
+    "jobLabel": "Job",
+    "organizationLabel": "Name of your organization",
+    "organizationPlaceholder": "Your organization name",
+    "establishmentLabel": "Name of your establishment",
+    "establishmentPlaceholder": "Your establishment name",
+    "dropdown": "Select from dropdown",
+    "business": "Business",
+    "education": "Education / Initial Training Center",
+    "learningTechnologist": "Learning Technologist",
+    "trainer": "Trainer",
+    "director": "Director / VP",
+    "learner": "Learner",
+    "other": "Other",
+    "higherEducation": "Higher Education",
+    "k12": "Primary and Secondary (K12)",
+    "submit": "Submit"
+  },
+  "quickPresentation1": {
+    "title": "Assess the level of understanding of participants",
+    "description": "Multiple choice, Poll, and Find a Number questions allow you to find out what your audience thinks and identify trends in a matter of seconds. You can also provide correct answers to assess the overall level of understanding."
+  },
+  "quickPresentation2": {
+    "title": "Give your participants the floor",
+    "description": "Invite your participants to answer in their own words using the Open Question, Find a Number, and Word Cloud question-types. The latter displays the most recurring answers in real time."
+  }
+}

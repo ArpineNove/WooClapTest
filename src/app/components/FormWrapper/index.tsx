@@ -5,14 +5,9 @@ import InfoBlock from '@/app/components/InfoBlock';
 
 import { BlueCircle, FormSection } from './styled';
 
-type Props = {
-  domains: string[];
-  usersPlans: Record<string, string>;
-};
-
-const FormWrapper = ({ domains = [], usersPlans = {} }: Props) => (
+const FormWrapper = () => (
   <FormSection>
-    <ContactForm domains={domains} usersPlans={usersPlans} />
+    <ContactForm />
     <BlueCircle />
     <InfoBlock />
   </FormSection>
