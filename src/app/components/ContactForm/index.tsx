@@ -15,11 +15,7 @@ import {
   Label,
   ErrorText,
 } from './styled';
-import {
-  generateSlackMessage,
-  sendCyphMessage,
-  sendToSlack,
-} from '@/utils/utils';
+import { generateSlackMessage, sendToSlack } from '@/utils/utils';
 import { validationSchema } from '@/app/components/ContactForm/model';
 
 import Modal from '@/app/components/Modal';
@@ -79,19 +75,21 @@ const ContactForm = () => {
             ? process.env.NEXT_PUBLIC_SLACK_WEBHOOK_DEFAULT
             : process.env.NEXT_PUBLIC_SLACK_WEBHOOK_CUSTOM;
 
-        sendCyphMessage(slackMessage).then((res: string) =>
-          sendToSlack(res, webhookUrl || '')
-            .then((res) => {
-              if (typeof res === 'string') {
-                setModalInfo(res);
-                setModalType('success');
-              } else {
-                setModalInfo(res.toString());
-                setModalType('error');
-              }
-            })
-            .finally(() => setOpen(true))
-        );
+        sendToSlack(slackMessage, webhookUrl || '')
+          .then((res) => {
+            if (typeof res === 'string') {
+              setModalInfo(res);
+              setModalType('success');
+            } else {
+              setModalInfo(res.toString());
+              setModalType('error');
+            }
+          })
+          .catch((error) => {
+            setModalInfo(error.toString());
+            setModalType('error');
+          })
+          .finally(() => setOpen(true));
 
         reset();
       })

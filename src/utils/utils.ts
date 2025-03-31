@@ -18,6 +18,7 @@ export const generateSlackMessage = (formData: {
 };
 
 export const sendToSlack = async (message: string, webhookUrl: string) => {
+  if (!webhookUrl) throw new Error('Webhook URL is required');
   try {
     await fetch(webhookUrl, {
       method: 'POST',
